@@ -1,7 +1,7 @@
 # new-buildscript-format
 This repository contains various contenders for the new buildscript format for Cucumber Linux 2.0 and the Ports Tree 2.0. Each subdirectory contains an example for one potential format. Eventually, we will review all of the proposed formats and decide which one we want to use as the new official format.
 
-If you have an idea in mind for a format, please feel free to write a prototype for your format and then send us a pull request.
+If you have an idea in mind for a format, please feel free to write a prototype for your format and then send us a pull request. If you do this, please add a README in you directory briefly explaining how to use your format (this doesn't have to be super formal or exhaustive).
 
 Note: the original-format directory contains an example in the original format; it is not a contender.
 
