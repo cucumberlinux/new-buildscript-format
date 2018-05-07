@@ -1,3 +1,25 @@
+#!/bin/bash
+
+# Copyright 2018 Scott Court
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 ######################## READ BEFORE EDITING THIS FILE #########################
 # You probably should not ever need to edit this file. The only time this file #
 #  should be edited is when maintaining the buildsystem as a whole. This file  #
@@ -10,7 +32,7 @@
 BASENAME=$( basename $0 | rev | cut -d . -f 2- | rev )
 
 # Downloads the source for this package
-src_download () {
+drv_download () {
 	if [ -z "$pkg_url" ]; then
 		echo "Error downloading source for $BASENAME: no pkg_url is present in ${BASENAME}.buildinfo"
 		exit 2
@@ -20,12 +42,12 @@ src_download () {
 }
 
 # Verifies the integrity of the downloaded source code
-src_verify () {
+drv_verify () {
 	echo -n
 }
 
 # Builds the package
-pkg_build () {
+drv_build () {
 	# Determine the architecture we are building on if it is not explicitly
 	# specified
 	if [ -z "$CUCARCH" ]; then
@@ -60,7 +82,7 @@ pkg_build () {
 	# Set some variables
 	NAME=$pkg_name
 	TARNAME=$pkg_tarball_name
-	VERSION= #TODO
+	VERSION=${VERSION:-$pkg_version}
 	BUILD=${BUILD:-1}
 	PACKAGE=$NAME-$VERSION-$CUCARCH-$BUILD
 	OUTDIR=${OUTDIR:-/tmp}
@@ -68,23 +90,34 @@ pkg_build () {
 	DESTDIR=$BUILDDIR/bin
 	SRCDIR=$BUILDDIR/src
 
-	# Save the Original Working Directory
-	OWD=$(realpath $(dirname $0))
+	# If the build directory already exists, remove it so we have a fresh
+	# start
+	if [ -e $BUILDDIR ]; then
+		rm $BUILDDIR -rf
+	fi
+
+	# Make a temporary directory to build/stage in
+	mkdir $BUILDDIR/{bin,src} -pv
+	cd $BUILDDIR/src
 
 	# Build the package
 	build
 
 	# Compress the package
 	cd $DESTDIR
-	makepkg -l y -c n /tmp/$PACKAGE.txz || exit 1
+	makepkg -l y -c n $OUTDIR/$PACKAGE.txz || exit 1
 	echo "Package $PACKAGE was successfully built to:"
-	echo "/tmp/$PACKAGE.txz"
+	echo "$OUTDIR/$PACKAGE.txz"
 }
 
-source ${BASENAME}.buildinfo
+# Save the Original Working Directory
+OWD=$(realpath $(dirname $0))
+
+# Load everything from the appropriate .buildinfo file
+source $OWD/${BASENAME}.buildinfo
 
 case $1 in
-	download)	src_download ;;
-	verify)		src_verify ;;
-	*)
+	download)	drv_download ;;
+	verify)		drv_verify ;;
+	*)		drv_build ;;
 esac
