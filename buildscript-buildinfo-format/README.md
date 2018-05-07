@@ -10,7 +10,7 @@ This is effectively a driver for .buildinfo files. It sources the .buildinfo fil
 It also allows for different tasks to be done depending on what the first argument to the script is. It supports the following arguments:
 * download - Downloads the source tarballs and other source files from the upstream provider.
 * verify - Verifies the checksums/signatures of the downloaded source tarballs and files.
-* <no argument>|build - Builds the package, accepting the same variables that the original buildscript format did.
+* no argument|build - Builds the package, accepting the same variables that the original buildscript format did.
 
 This file should be the same for every single package. This allows us to make global package changes by editing this one file.
 
