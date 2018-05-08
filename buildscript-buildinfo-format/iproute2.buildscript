@@ -81,7 +81,7 @@ drv_build () {
 
 	# Set some variables
 	NAME=$pkg_name
-	TARNAME=$pkg_tarball_name
+	TARNAME=${pkg_tarball_name:-$NAME}
 	VERSION=${VERSION:-$pkg_version}
 	BUILD=${BUILD:-1}
 	PACKAGE=$NAME-$VERSION-$CUCARCH-$BUILD
@@ -89,6 +89,7 @@ drv_build () {
 	BUILDDIR=${BUILDDIR:-/tmp/$PACKAGE}
 	DESTDIR=$BUILDDIR/bin
 	SRCDIR=$BUILDDIR/src
+	MAXJOBS=${MAXJOBS:-4}
 
 	# If the build directory already exists, remove it so we have a fresh
 	# start
