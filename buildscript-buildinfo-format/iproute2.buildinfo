@@ -32,13 +32,8 @@ build () {
 	tar -xf "$OWD/$TARNAME-$VERSION.tar.xz" || exit 1
 	cd $TARNAME-$VERSION || exit 1
 
-	# Apply any patches
-	if [ -d $OWD/patches ]; then
-		for patch in $(ls $OWD/patches); do
-			echo Applying patch $patch
-			patch -p1 < $OWD/patches/$patch || exit 1
-		done
-	fi
+	# Apply any patches located in $OWD/patches
+	pkgapi_apply_patches || exit 1
 
 	# Do the actual build
 	./configure \
@@ -48,22 +43,17 @@ build () {
 		--localstatedir=/var \
 		--disable-static \
 		--build=$CUCARCH-cucumber-linux || exit 1
-	make -j $MAXJOBS || make || exit 1
+	# Use pkgapi_make instead of make in order to handle parallel builds.
+	pkgapi_make || exit 1
 	make install DESTDIR=$DESTDIR || exit 1
 
-	# Strip
-	find $DESTDIR/{,usr/}{bin,lib${LIBDIRSUFFIX},sbin} -type f \
-		-exec strip --strip-debug '{}' ';'
+	# Strip all of the binaries and libraries in $DESTDIR/ of their
+	# debugging symbols.
+	pkgapi_strip
 
-	# Copy any additional package scripts
-	mkdir -pv $DESTDIR/install
-	if [ -e $OWD/slack-desc ]; then
-		cat $OWD/slack-desc > $DESTDIR/install/slack-desc
-	fi
-	if [ -e $OWD/doinst.sh ]; then
-		cat $OWD/doinst.sh > $DESTDIR/install/doinst.sh
-		chmod 755 $DESTDIR/install/doinst.sh
-	fi
+	# Copies ths install scripts (slack-desc and doint.sh) from $OWD to
+	# $DESTDIR/install, creating $DESTDIR/install if need be.
+	pkgapi_copy_package_scripts
 
 }
 

@@ -27,7 +27,63 @@
 #         modifications should be made in the .buildinfo file instead.         #
 ################################################################################
 
-# Cucumber Linux Buildscript Driver for .buildinfo Files
+######################## Cucumber Linux Buildscript API ########################
+
+# Applies any patches located in $OWD/patches to the current directory.
+# Arguments:
+#	none
+# Returns: 0 if all patches were successfully applied, or 1 if a patch failed to
+#	apply.
+pkgapi_apply_patches () {
+	# Apply any patches
+	if [ -d $OWD/patches ]; then
+		for patch in $(ls $OWD/patches); do
+			echo Applying patch $patch
+			patch -p1 < $OWD/patches/$patch || return 1
+		done
+	fi
+}
+
+# Strips any binaries and libraries in the $DESTDIR directory of their debugging
+# symbols.
+# Arguments:
+#	none
+# Returns: nothing
+pkgapi_strip () {
+	# Strip
+	find $DESTDIR/{,usr/}{bin,lib${LIBDIRSUFFIX},sbin} -type f \
+		-exec strip --strip-debug '{}' ';'
+}
+
+# Copies the install scripts (slack-desc and doinst.sh) from $OWD to
+# $DESTDIR/install. If $DESTDIR/install does not exist, it will be created.
+# Arguments:
+#	none
+# Returns: nothing
+pkgapi_copy_package_scripts () {
+	# Copy any additional package scripts
+	if [ ! -d $DESTDIR/install ]; then
+		mkdir -pv $DESTDIR/install
+	fi
+	if [ -e $OWD/slack-desc ]; then
+		cat $OWD/slack-desc > $DESTDIR/install/slack-desc
+	fi
+	if [ -e $OWD/doinst.sh ]; then
+		cat $OWD/doinst.sh > $DESTDIR/install/doinst.sh
+		chmod 755 $DESTDIR/install/doinst.sh
+	fi
+}
+
+# Runs make, passing through any arguments and automatically handling parallel
+# builds.
+# Arguments:
+#	$@  Arguments to pass to make.
+# Returns: 0 if make exited successfully, or 1 if make exited with a failure.
+pkgapi_make () {
+	make -j $MAXJOBS $@ || make $@ || return 1
+}
+
+############ Cucumber Linux Buildscript Driver for .buildinfo Files ############
 
 BASENAME=$( basename $0 | rev | cut -d . -f 2- | rev )
 
@@ -120,5 +176,6 @@ source $OWD/${BASENAME}.buildinfo
 case $1 in
 	download)	drv_download ;;
 	verify)		drv_verify ;;
-	*)		drv_build ;;
+	build|"")	drv_build ;;
 esac
+
