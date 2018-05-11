@@ -27,6 +27,9 @@
 #         modifications should be made in the .buildinfo file instead.         #
 ################################################################################
 
+# Driver Version
+DRV_VERSION=0.0.1
+
 ######################## Cucumber Linux Buildscript API ########################
 
 # Applies any patches located in $OWD/patches to the current directory.
@@ -197,6 +200,37 @@ drv_build () {
 	echo "$OUTDIR/$PACKAGE.txz"
 }
 
+# Displays the help message
+drv_help () {
+	cat << EOF
+Cucumber Linux Build System Driver for Cucumber Linux .buildinfo Files.
+Driver Version: $DRV_VERSION
+
+This is the Cucumber Linux build system driver for .buildinfo files. It sources
+the .buildinfo file and uses the variables and functions defined in there to
+facilitate building the package.
+
+It also allows for different tasks to be done depending on what the first
+argument to the script is. It supports the following arguments:
+
+  * download - Downloads the source tarballs and other source files from the
+    upstream provider.
+  * verify - Verifies the checksums/signatures of the downloaded source
+    tarballs and files.
+  * builddeps - Lists the build time dependencies for this package. This are
+    defined in the *.buildinfo file by setting the pkg_build_dependencies to an
+    array containing the names of the packages it depends on, as they appear in
+    the Cucumber Linux source/ports tree.
+  * help - Displays this message.
+  * no argument|build - Builds the package, accepting the same variables that
+    the original buildscript format did.
+
+This file should be the same for every single package. This allows us to make
+global package changes by editing this one file. In other words you should
+probably not be editing this file.
+EOF
+}
+
 # Save the Original Working Directory
 OWD=$(realpath $(dirname $0))
 
@@ -216,5 +250,7 @@ case $1 in
 	verify)		drv_verify ;;
 	builddeps)	drv_builddeps ;;
 	build|"")	drv_build ;;
+	help)		drv_help ;;
+	*)		echo "Unsupported action. Use \`$0 help\` for a list of supported actions." ;;
 esac
 
