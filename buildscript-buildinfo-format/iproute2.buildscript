@@ -135,7 +135,7 @@ drv_verify () {
 
 # Lists the build time dependencies for this package
 drv_builddeps () {
-	echo $pkg_build_dependencies
+	echo ${pkg_build_dependencies[*]}
 }
 
 # Builds the package
