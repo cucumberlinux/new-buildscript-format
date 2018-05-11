@@ -217,7 +217,7 @@ argument to the script is. It supports the following arguments:
     upstream provider.
   * verify - Verifies the checksums/signatures of the downloaded source
     tarballs and files.
-  * builddeps - Lists the build time dependencies for this package. This are
+  * builddeps - Lists the build time dependencies for this package. These are
     defined in the *.buildinfo file by setting the pkg_build_dependencies to an
     array containing the names of the packages it depends on, as they appear in
     the Cucumber Linux source/ports tree.

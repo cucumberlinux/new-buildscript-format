@@ -10,7 +10,7 @@ This is effectively a driver for .buildinfo files. It sources the .buildinfo fil
 It also allows for different tasks to be done depending on what the first argument to the script is. It supports the following arguments:
 * download - Downloads the source tarballs and other source files from the upstream provider.
 * verify - Verifies the checksums/signatures of the downloaded source tarballs and files.
-* builddeps - Lists the build time dependencies for this package. This are defined in the *.buildinfo file by setting the `pkg_build_dependencies` to an array containing the names of the packages it depends on, as they appear in the Cucumber Linux source/ports tree.
+* builddeps - Lists the build time dependencies for this package. These are defined in the *.buildinfo file by setting the `pkg_build_dependencies` to an array containing the names of the packages it depends on, as they appear in the Cucumber Linux source/ports tree.
 * help -  Displays a help message.
 * no argument|build - Builds the package, accepting the same variables that the original buildscript format did.
 
