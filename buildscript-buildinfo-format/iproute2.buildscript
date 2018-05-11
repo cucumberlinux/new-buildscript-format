@@ -99,7 +99,43 @@ drv_download () {
 
 # Verifies the integrity of the downloaded source code
 drv_verify () {
-	echo -n
+	# Verify an checksums present in $OWD
+	if [ -e "$OWD/sha512sums" ]; then
+		echo Checking sha512sums
+		sha512sum -c "$OWD/sha512sums" || exit 3
+	fi
+	if [ -e "$OWD/sha256sums" ]; then
+		echo Checking sha256sums
+		sha256sum -c "$OWD/sha256sums" || exit 3
+	fi
+	if [ -e "$OWD/sha1sums" ]; then
+		echo Checking sha1sums
+		sha1sum -c "$OWD/sha1sums" || exit 3
+	fi
+	if [ -e "$OWD/shasums" ]; then
+		echo Checking shasums
+		shasum -c "$OWD/shasums" || exit 3
+	fi
+	if [ -e "$OWD/md5sums" ]; then
+		echo Checking md5sums
+		md5sum -c "$OWD/md5sums" || exit 3
+	fi
+
+	# Run the 'verify' function if it exists
+	if [ "$(type -t verify)" == "function" ]; then
+		verify
+		STATUS=$?
+		if [ $STATUS -ne 0 ]; then
+			echo "Verification failed ('verify' returned $STATUS)"
+			exit 3
+		fi
+	fi
+	echo Source checksum/signature verification completeled successfully.
+}
+
+# Lists the build time dependencies for this package
+drv_builddeps () {
+	echo $pkg_build_dependencies
 }
 
 # Builds the package
@@ -135,17 +171,11 @@ drv_build () {
 		LIBDIRSUFFIX=""
 	esac
 
-	# Set some variables
-	NAME=$pkg_name
-	TARNAME=${pkg_tarball_name:-$NAME}
-	VERSION=${VERSION:-$pkg_version}
-	BUILD=${BUILD:-1}
-	PACKAGE=$NAME-$VERSION-$CUCARCH-$BUILD
+	# Set some variables specific to the build environment
 	OUTDIR=${OUTDIR:-/tmp}
 	BUILDDIR=${BUILDDIR:-/tmp/$PACKAGE}
 	DESTDIR=$BUILDDIR/bin
 	SRCDIR=$BUILDDIR/src
-	MAXJOBS=${MAXJOBS:-4}
 
 	# If the build directory already exists, remove it so we have a fresh
 	# start
@@ -173,9 +203,18 @@ OWD=$(realpath $(dirname $0))
 # Load everything from the appropriate .buildinfo file
 source $OWD/${BASENAME}.buildinfo
 
+# Set some global variables
+NAME=$pkg_name
+TARNAME=${pkg_tarball_name:-$NAME}
+VERSION=${VERSION:-$pkg_version}
+BUILD=${BUILD:-1}
+PACKAGE=$NAME-$VERSION-$CUCARCH-$BUILD
+MAXJOBS=${MAXJOBS:-4}
+
 case $1 in
 	download)	drv_download ;;
 	verify)		drv_verify ;;
+	builddeps)	drv_builddeps ;;
 	build|"")	drv_build ;;
 esac
 
