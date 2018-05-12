@@ -138,7 +138,7 @@ drv_verify () {
 
 # Lists the build time dependencies for this package
 drv_builddeps () {
-	echo ${BUILD_DEPENDENCIES[*]}
+	echo ${BUILDDEPS[*]}
 }
 
 # Builds the package
@@ -218,7 +218,7 @@ argument to the script is. It supports the following arguments:
   * verify - Verifies the checksums/signatures of the downloaded source
     tarballs and files.
   * builddeps - Lists the build time dependencies for this package. These are
-    defined in the *.buildinfo file by setting the BUILD_DEPENDENCIES to an
+    defined in the *.buildinfo file by setting the BUILDDEPS to an
     array containing the names of the packages it depends on, as they appear in
     the Cucumber Linux source/ports tree.
   * help - Displays this message.
