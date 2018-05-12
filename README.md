@@ -1,3 +1,7 @@
+# THIS REPOSITORY IS NOW DEFUNCT
+
+The contents of this repository have been imported to the repository https://github.com/cucumberlinux/ports. This repository will receive no further updates.
+
 # new-buildscript-format
 This repository contains prototypes for various contenders for the new buildscript format for Cucumber Linux 2.0 and the Ports Tree 2.0. Each subdirectory contains an example for one potential format. Eventually, we will review all of the proposed formats and decide which one we want to use as the new official format.
 
