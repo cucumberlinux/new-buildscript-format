@@ -92,12 +92,15 @@ BASENAME=$( basename $0 | rev | cut -d . -f 2- | rev )
 
 # Downloads the source for this package
 drv_download () {
-	if [ -z "$pkg_url" ]; then
-		echo "Error downloading source for $BASENAME: no pkg_url is present in ${BASENAME}.buildinfo"
+	if [ -z "$URL" ]; then
+		echo "Error downloading source for $BASENAME: no URL is present in ${BASENAME}.buildinfo"
 		exit 2
 	fi
 
-	wget -c ${pkg_url[*]} || exit 1
+	for url in ${URL[@]}; do
+		echo Downloading $url
+		curl -# -O $url || exit 1
+	done
 }
 
 # Verifies the integrity of the downloaded source code
@@ -238,9 +241,7 @@ OWD=$(realpath $(dirname $0))
 source $OWD/${BASENAME}.buildinfo
 
 # Set some global variables
-NAME=$NAME
 TARNAME=${TARNAME:-$NAME}
-VERSION=${VERSION:-$VERSION}
 BUILD=${BUILD:-1}
 PACKAGE=$NAME-$VERSION-$CUCARCH-$BUILD
 MAXJOBS=${MAXJOBS:-4}
