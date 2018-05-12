@@ -22,10 +22,10 @@
 
 # Cucumber Linux Buildinfo for iproute2
 
-pkg_name=iproute2
-pkg_version=4.16.0
-pkg_url=(https://www.kernel.org/pub/linux/utils/net/${pkg_name}/${pkg_name}-${pkg_version}.tar.xz)
-pkg_build_dependencies=()
+NAME=iproute2
+VERSION=4.16.0
+URL=(https://www.kernel.org/pub/linux/utils/net/${pkg_name}/${pkg_name}-${pkg_version}.tar.xz)
+BUILD_DEPENDENCIES=(iptables)
 
 build () {
 
