@@ -28,7 +28,7 @@
 ################################################################################
 
 # Driver Version
-DRV_VERSION=git
+DRV_VERSION=0.0.1
 
 ######################## Cucumber Linux Buildscript API ########################
 
@@ -97,10 +97,12 @@ drv_download () {
 		exit 2
 	fi
 
+	pushd $OWD
 	for url in ${URL[@]}; do
 		echo Downloading $url
 		curl -# -O $url || exit 1
 	done
+	popd
 }
 
 # Verifies the integrity of the downloaded source code
