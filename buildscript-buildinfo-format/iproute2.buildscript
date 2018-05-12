@@ -178,6 +178,7 @@ drv_build () {
 	esac
 
 	# Set some variables specific to the build environment
+	PACKAGE=$NAME-$VERSION-$CUCARCH-$BUILD
 	OUTDIR=${OUTDIR:-/tmp}
 	BUILDDIR=${BUILDDIR:-/tmp/$PACKAGE}
 	DESTDIR=$BUILDDIR/bin
@@ -243,7 +244,6 @@ source $OWD/${BASENAME}.buildinfo
 # Set some global variables
 TARNAME=${TARNAME:-$NAME}
 BUILD=${BUILD:-1}
-PACKAGE=$NAME-$VERSION-$CUCARCH-$BUILD
 MAXJOBS=${MAXJOBS:-4}
 
 case $1 in
